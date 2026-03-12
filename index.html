@@ -1,0 +1,88 @@
+<div id='player'></div>
+<label><input type='checkbox' id='autoplay'> Autoplay</label><table id='songTable'>
+<thead><tr><th onclick='sortTable(0)'>Title</th><th onclick='sortTable(1)'>Artist</th><th onclick='sortTable(2)'>Album</th><th onclick='sortTable(3)'>Year</th><th onclick='sortTable(4)'>Composer</th><th onclick='sortTable(5)'>Lyricist</th><th onclick='sortTable(6)'>YouTube ID</th><th onclick='sortTable(7)'>Rank 1</th><th onclick='sortTable(8)'>Rank 2</th><th onclick='sortTable(9)'>Rank 3</th></tr></thead><tbody><tr data-video=''><td><a href='#' onclick='playRow(this);return false;'>Είσαι μια κότα παρδαλή</a></td><td>Νίνου - Τζουανάκος</td><td>LIBERTY 218</td><td>1955</td><td>Μαρίκα Νίνου</td><td>Ευτυχία Παπαγιανοπούλου</td><td>SxMqFqhs2PM</td><td></td><td></td><td></td></tr><tr data-video=''><td><a href='#' onclick='playRow(this);return false;'>Η πεταλούδα</a></td><td>Παναγιώτης Ξανθόπουλος, Γιώργος Ξανθόπουλος, Τσινιάρη Ζωή</td><td></td><td></td><td>Γιωργος Μητσακης</td><td>Γιωργος Μητσακης</td><td>nYSGjLe6ZjI</td><td></td><td></td><td></td></tr><tr data-video=''><td><a href='#' onclick='playRow(this);return false;'>Τι σήμερα τι αύριο τι τώρα</a></td><td>Μαρίκα Νίνου</td><td></td><td></td><td>Βασίλης Τσιτσάνης</td><td>Βασίλης Τσιτσάνης</td><td>EXZ4T9XSu5Y</td><td></td><td></td><td></td></tr><tr data-video=''><td><a href='#' onclick='playRow(this);return false;'>Ήμουνα μόρτης μια φορά</a></td><td>Γιάννης Ιωαννίδης</td><td>Columbia USA 56144-F</td><td>1928</td><td>Δημοσθένης Ζάττας</td><td>Δημοσθένης Ζάττας</td><td>OZMpaWQwfHI</td><td></td><td></td><td></td></tr><tr data-video=''><td><a href='#' onclick='playRow(this);return false;'>Από κάτω απ' τις ντομάτες</a></td><td>Γιάννης Ιωαννίδης</td><td></td><td>1928</td><td></td><td></td><td>FtI6V7PG2xA</td><td></td><td></td><td></td></tr><tr data-video=''><td><a href='#' onclick='playRow(this);return false;'>Η μάγισσα της Βαγδάτης</a></td><td>Πρόδρομος Τσαουσάκης, Βασίλης Τσιτσάνης</td><td>Columbia DG 6619</td><td>1946</td><td>Βασίλης Τσιτσάνης</td><td>Βασίλης Τσιτσάνης</td><td>MNnont1fURs</td><td></td><td></td><td></td></tr><tr data-video=''><td><a href='#' onclick='playRow(this);return false;'>Ο γάμος του Τσιτσάνη (Βρήκα τη γυναίκα που γουστάρω)</a></td><td>Στράτος Παγιουμτζης - Περπινιάδης Στελλάκης</td><td>COLUMBIA DG 6449</td><td>1938</td><td>Βασίλης Τσιτσάνης</td><td>Βασίλης Τσιτσάνης</td><td>n-ULwbmuV9Q</td><td></td><td></td><td></td></tr></tbody></table>
+<script src='https://www.youtube.com/iframe_api'></script>
+
+<script>
+
+var player;
+var currentRow = null;
+
+function onYouTubeIframeAPIReady(){
+
+player = new YT.Player('player',{
+height:'360',
+width:'640',
+videoId:'dQw4w9WgXcQ',
+events:{ 'onStateChange': onPlayerStateChange }
+});
+
+}
+
+function playRow(link){
+
+var row = link.closest('tr');
+currentRow = row;
+
+var vid = row.dataset.video;
+
+player.loadVideoById(vid);
+
+}
+
+function onPlayerStateChange(event){
+
+if(event.data == YT.PlayerState.ENDED){
+
+if(document.getElementById('autoplay').checked){
+
+playNext();
+
+}
+
+}
+
+}
+
+function playNext(){
+
+var rows = Array.from(document.querySelectorAll('#songTable tbody tr'));
+
+var index = rows.indexOf(currentRow);
+
+index++;
+
+if(index >= rows.length) return;
+
+currentRow = rows[index];
+
+var vid = currentRow.dataset.video;
+
+player.loadVideoById(vid);
+
+}
+
+function sortTable(n){
+
+var table = document.getElementById('songTable');
+var rows = Array.from(table.rows).slice(1);
+
+var asc = table.getAttribute('data-sort') !== 'asc';
+
+rows.sort(function(a,b){
+
+var A = a.cells[n].innerText;
+var B = b.cells[n].innerText;
+
+return asc ? A.localeCompare(B,undefined,{numeric:true}) : B.localeCompare(A,undefined,{numeric:true});
+
+});
+
+table.setAttribute('data-sort', asc ? 'asc':'desc');
+
+rows.forEach(r=>table.tBodies[0].appendChild(r));
+
+}
+
+</script>
+
